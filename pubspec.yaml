@@ -1,6 +1,6 @@
 name: eni_config
-description: "Eniware app configuration services"
-version: 2.0.3
+description: "Flutter configuration management system with YAML/JSON support, environment-specific configs, and flexible provider architecture."
+version: 2.0.5
 homepage: https://eniware-systems.de
 publish_to: https://gitea.eniware-systems.de/api/packages/eni-flutter/pub
 
@@ -14,13 +14,13 @@ dependencies:
 
   eni_svc:
     git:
-      url: git@github.com:eniware-systems/eni_svc.git
+      url: https://github.com/eniware-systems/eni_svc.git
       ref: main
   eni_utils:
     git:
-      url: git@github.com:eniware-systems/eni_utils.git
+      url: https://github.com/eniware-systems/eni_utils.git
       ref: main
-  yaml: ^3.1.2
+  yaml: ^3.1.3
 
 dev_dependencies:
   flutter_test:
