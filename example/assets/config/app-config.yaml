@@ -1,0 +1,10 @@
+app:
+  name: "My Flutter App"
+api:
+  url: "https://api.example.com"
+  timeout: 30
+  retries: 3
+features:
+  darkMode: false
+  analytics: true
+  notifications: true

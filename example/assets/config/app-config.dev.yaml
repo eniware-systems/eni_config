@@ -1,0 +1,6 @@
+environment: dev
+api:
+  url: "https://dev-api.example.com"
+  timeout: 60
+features:
+  analytics: false
