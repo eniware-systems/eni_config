@@ -15,11 +15,11 @@ dependencies:
   eni_svc:
     git:
       url: https://github.com/eniware-systems/eni_svc.git
-      ref: main
+      ref: 2.0.6
   eni_utils:
     git:
       url: https://github.com/eniware-systems/eni_utils.git
-      ref: main
+      ref: 2.0.3
   yaml: ^3.1.3
 
 dev_dependencies:
