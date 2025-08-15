@@ -21,7 +21,7 @@ dart pub add eni_config
 dart pub add eni_svc
 ```
 
-Note: The `eni_svc` package is a required dependency for `eni_config`. While technically you could try to use eni_config without eni_svc, this is not officially supported and has not been tested by us.
+Note: The `eni_svc` package is a required dependency for `eni_config`. While technically you could try to use eni_config without eni_svc, this is not officially supported and has not been tested.
 
 ## Usage
 
