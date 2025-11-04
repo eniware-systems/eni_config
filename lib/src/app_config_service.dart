@@ -1,6 +1,5 @@
 import 'package:eni_config/src/config_provider.dart';
 import 'package:eni_svc/eni_svc.dart';
-import 'package:eni_svc/collection.dart';
 import 'package:eni_utils/eni_utils.dart';
 import 'package:flutter/widgets.dart';
 
@@ -55,6 +54,7 @@ abstract class AppConfigRepository {
   /// - int
   /// - double
   /// - bool
+  /// - List<String>
   ///
   /// [value] The value to convert.
   ///
@@ -80,6 +80,10 @@ abstract class AppConfigRepository {
 
     if (T == bool) {
       return bool.parse(value.toString()) as T;
+    }
+
+    if (T == List<String>) {
+      return (value as List<dynamic>).cast<String>() as T;
     }
 
     throw UnsupportedError("Type conversion unsupported");

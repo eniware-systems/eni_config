@@ -25,9 +25,47 @@ Note: The `eni_svc` package is a required dependency for `eni_config`. While tec
 
 ## Usage
 
+### Configuration Files
+
+The package supports both YAML and JSON configuration files. By default, it looks for files in folder `assets/config`named:
+
+- `app-config.yaml` or `app-config.json` for the default environment
+- `app-config.{environment}.yaml` or `app-config.{environment}.json` for specific environments
+
+Example YAML `app-config.dev.yaml` configuration:
+
+```yaml
+api:
+  url: "https://api.example.com"
+  timeout: 30
+  retries: 3
+feature:
+  darkmode: 
+```
+
+Example JSON `app-config.prod.json` configuration:
+
+```json
+{
+  "api": {
+    "url": "https://api.example.com",
+    "timeout": 31
+  }
+}
+```
+
+Make sure your config files are registered under assets in your `pubspec.yaml` like this:
+
+```yaml
+flutter:
+  assets:
+  - assets/config/
+```
+
 ### Basic Setup
 
-To use the configuration system in your Flutter application, you need to set up the `AppConfigService` and register configuration providers:
+To use the configuration system in your Flutter application, you need to set up the `AppConfigService` and register configuration providers.
+The environments `dev` and `prod` are loaded in order. So `prod` is loaded as last. In our example this determines the value 31 for `timeout`:   
 
 ```dart
 import 'package:eni_config/eni_config.dart';
@@ -35,10 +73,11 @@ import 'package:eni_svc/eni_svc.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-    ServiceScope(child: const MyApp())
-      ..addAppConfig(environments: ['dev', 'prod'])
-  );
+   runApp(
+      ServiceScope(child: const MyApp())
+         ..addPackage(makePackage("app")..useAppConfig())
+         ..addAppConfig(environments: ['dev', 'prod']),
+   );
 }
 ```
 
@@ -52,38 +91,10 @@ void build(BuildContext context) {
   final apiUrl = context.appConfig.get<String>('api.url');
 
   // Get an integer value with a default
-  final timeout = context.appConfig.get<int>('api.timeout', 30);
+  final timeout = context.appConfig.get<int>('api.timeout', 29);
 
   // Get a value that might not exist
   final apiKey = context.appConfig.getOrNull<String>('api.key');
-}
-```
-
-### Configuration Files
-
-The package supports both YAML and JSON configuration files. By default, it looks for files named:
-
-- `app-config.yaml` or `app-config.json` for the default environment
-- `app-config.{environment}.yaml` or `app-config.{environment}.json` for specific environments
-
-Example YAML configuration:
-
-```yaml
-api:
-  url: "https://api.example.com"
-  timeout: 30
-  retries: 3
-```
-
-Example JSON configuration:
-
-```json
-{
-  "api": {
-    "url": "https://api.example.com",
-    "timeout": 30,
-    "retries": 3
-  }
 }
 ```
 
@@ -107,6 +118,23 @@ class CustomConfigProvider extends ConfigProvider {
 }
 ```
 
+To register a `ConfigProvider` use `provide` of `eni_svc` inside of `main`:  
+
+```dart
+void main() {
+   runApp(
+      ServiceScope(child: const MyApp())
+         ..addPackage(makePackage("app")..useAppConfig())
+         ..addAppConfig(environments: ['dev', 'prod'])
+         ..provide<ConfigProvider>(CustomConfigProvider(environment: 'prod'))
+   );
+}
+```
+
+you could access values of `CustomConfigProvider` via `get`, too:  
+   `final value = context.appConfig.get<String>('custom.setting');`
+
+
 ### Using with Package System
 
 The `eni_config` package requires and is built on the package system from `eni_svc`. You can create a package with configuration support using the `PackageBuilder` class and the `useAppConfig` method:
@@ -120,6 +148,11 @@ The `eni_config` package requires and is built on the package system from `eni_s
 2. Add the package to your service scope:
    - Create a `ServiceScope` for your application
    - Use the `addPackage()` method to add your package to the scope
+    
+3. Add a configuration provider to your service scope:
+   - Create an implementation of `ConfigProvider`
+   - Use `provide()` methode to add your configuration provider to the scope
+
 
 This integration allows you to manage configurations at the package level, making your application more modular and maintainable.
 

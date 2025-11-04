@@ -1,6 +1,6 @@
-environment: dev
 api:
   url: "https://dev-api.example.com"
-  timeout: 60
+  timeout: 30
+  retries: 3
 features:
-  analytics: false
+  darkMode: false

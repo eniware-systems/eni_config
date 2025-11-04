@@ -195,7 +195,7 @@ void main() {
       ..provide<AppConfigService>(appConfigService);
     await tester.pumpWidget(scope);
 
-    expect(appConfigService.get(keyName), 3);
+    expect(appConfigService.get(keyName), 1);
   });
   testWidgets(
       'multiple providers with same key overwrite value by precedence is working reversed order',

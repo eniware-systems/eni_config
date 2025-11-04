@@ -1,6 +1,6 @@
 import 'package:eni_config/eni_config.dart';
 import 'package:eni_svc/eni_svc.dart';
-import 'package:flutter/foundation.dart';
+import 'package:eni_utils/eni_utils.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,8 +10,22 @@ void main() {
   runApp(ServiceScope(
     child: const MyApp(),
   )
-    ..addAppConfig(environments: ['dev']) // Register the AppConfig service
-    ..addPackage(packageBuilder)); // Add the package directly
+    ..addAppConfig(
+        environments: ['dev', 'prod']) // Register the AppConfig service
+    ..addPackage(packageBuilder) // Add the package directly
+    ..provide<ConfigProvider>(CustomConfigProvider(environment: 'prod')));
+}
+
+class CustomConfigProvider extends ConfigProvider {
+  CustomConfigProvider({super.environment, super.priority});
+
+  @override
+  Future<Map<String, dynamic>> load() async {
+    // Load configuration from your custom source
+    return {
+      'custom': {'setting': 'value'}
+    };
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -35,14 +49,13 @@ class ConfigDemoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logger = loggerFor("Result");
     // Access configuration values using the AppConfigService
     final appConfig = context.getService<AppConfigService>();
 
     // Get all configuration values as a map for debugging
     final allConfig = appConfig.all;
-    if (kDebugMode) {
-      print('All configuration values: $allConfig');
-    }
+    logger.log(Level.debug, 'All configuration values: $allConfig');
 
     // Default values in case configuration keys are not found
     String appName = 'Default App Name';
@@ -50,86 +63,52 @@ class ConfigDemoScreen extends StatelessWidget {
     int timeout = 30;
     int retries = 3;
     bool darkModeEnabled = false;
-    bool analyticsEnabled = false;
-    bool notificationsEnabled = false;
+    String setting = '';
 
     // Try to get configuration values with type conversion
     try {
+      // Since 'app.name' is not defined, exception is expected
       appName = appConfig.get<String>('app.name');
-      if (kDebugMode) {
-        print('Successfully retrieved app.name: $appName');
-      }
+      logger.log(Level.debug, 'Successfully retrieved app.name: $appName');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving app.name: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving app.name: $e');
     }
 
     try {
       apiUrl = appConfig.get<String>('api.url');
-      if (kDebugMode) {
-        print('Successfully retrieved api.url: $apiUrl');
-      }
+      logger.log(Level.debug, 'Successfully retrieved api.url: $apiUrl');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving api.url: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving api.url: $e');
     }
 
     try {
       timeout = appConfig.get<int>('api.timeout');
-      if (kDebugMode) {
-        print('Successfully retrieved api.timeout: $timeout');
-      }
+      logger.log(Level.debug, 'Successfully retrieved api.timeout: $timeout');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving api.timeout: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving api.timeout: $e');
     }
 
     try {
       retries = appConfig.get<int>('api.retries');
-      if (kDebugMode) {
-        print('Successfully retrieved api.retries: $retries');
-      }
+      logger.log(Level.debug, 'Successfully retrieved api.retries: $retries');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving api.retries: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving api.retries: $e');
     }
 
     try {
       darkModeEnabled = appConfig.get<bool>('features.darkMode');
-      if (kDebugMode) {
-        print('Successfully retrieved features.darkMode: $darkModeEnabled');
-      }
+      logger.log(Level.debug,
+          'Successfully retrieved features.darkMode: $darkModeEnabled');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving features.darkMode: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving features.darkMode: $e');
     }
 
     try {
-      analyticsEnabled = appConfig.get<bool>('features.analytics');
-      if (kDebugMode) {
-        print('Successfully retrieved features.analytics: $analyticsEnabled');
-      }
+      setting = appConfig.get<String>('custom.setting');
+      logger.log(
+          Level.debug, 'Successfully retrieved custom.setting: $setting');
     } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving features.analytics: $e');
-      }
-    }
-
-    try {
-      notificationsEnabled = appConfig.get<bool>('features.notifications');
-      if (kDebugMode) {
-        print(
-            'Successfully retrieved features.notifications: $notificationsEnabled');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error retrieving features.notifications: $e');
-      }
+      logger.log(Level.debug, 'Error retrieving custom.setting: $e');
     }
 
     return Scaffold(
@@ -147,12 +126,11 @@ class ConfigDemoScreen extends StatelessWidget {
             Text('URL: $apiUrl'),
             Text('Timeout: $timeout seconds'),
             Text('Retries: $retries'),
+            Text('setting: $setting'),
             const SizedBox(height: 16),
             Text('Features:', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             _FeatureItem(name: 'Dark Mode', enabled: darkModeEnabled),
-            _FeatureItem(name: 'Analytics', enabled: analyticsEnabled),
-            _FeatureItem(name: 'Notifications', enabled: notificationsEnabled),
             const SizedBox(height: 16),
             Text('All Configuration:',
                 style: Theme.of(context).textTheme.titleLarge),

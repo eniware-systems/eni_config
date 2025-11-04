@@ -14,6 +14,11 @@ dependencies:
   eni_svc:
     hosted: https://gitea.eniware-systems.de/api/packages/eni-flutter/pub
     version: ^2.0.6
+
+  eni_utils:
+    hosted: https://gitea.eniware-systems.de/api/packages/eni-flutter/pub
+    version: ^2.0.3
+
   eni_config:
     hosted: https://gitea.eniware-systems.de/api/packages/eni-flutter/pub
     version: ^2.0.5

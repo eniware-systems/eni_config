@@ -1,3 +1,7 @@
+## 2.0.6
+
+- added List<String> conversion for get<List<String>>() and getOrNull<List<String>>()
+
 ## 2.0.5
 
 - Updated Dependencies:
